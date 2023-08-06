@@ -8,7 +8,7 @@ import os
 
 import utils_convertor
 
-
+CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # CONSTANTS
 BORDER_RADIUS_THUMBNAIL = 100
@@ -16,8 +16,8 @@ BORDER_RADIUS_RECTANGLE = 20
 BACKGROUND_OPACITY = 150
 THUMBNAIL_YT_NAME = "youtube_thumbnail.png"
 
-PRIMARY_FONT = "Roboto-Black.ttf"
-ADDITIONAL_FONT = "Roboto-Light.ttf"
+PRIMARY_FONT = CURRENT_PATH + "/Roboto-Black.ttf"
+ADDITIONAL_FONT = CURRENT_PATH + "/Roboto-Light.ttf"
 
 video_id = utils_convertor.get_youtube_video_id(input("URL de la vidéo YouTube: "))
 
@@ -45,7 +45,7 @@ thumbnail_url = response['items'][0]['snippet']['thumbnails']['maxres']['url']
 response = requests.get(thumbnail_url)
 
 # Save image locally
-with open("youtube_thumbnail.png", "wb") as img_file:
+with open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}", "wb") as img_file:
     img_file.write(response.content)
 
 print("Miniature téléchargée avec succès.")
@@ -55,7 +55,7 @@ print("Miniature téléchargée avec succès.")
 # ROUND UP THE THUMBNAIL
 utils_convertor.checklist(1)
 
-im = Image.open(THUMBNAIL_YT_NAME)
+im = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 
 # Create a circular mask for rounding
 circle_mask = Image.new('L', (BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL * 2), 0)
@@ -72,7 +72,7 @@ alpha.paste(circle_mask.crop((BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL, 
 
 # Save image locally
 im.putalpha(alpha)
-im.save(THUMBNAIL_YT_NAME)
+im.save(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 
     
 
@@ -162,7 +162,7 @@ draw.text((additional_text_x, additional_text_y), additional_text, fill=(255, 25
 utils_convertor.checklist(6)
 
 # Open and resize thumbnail
-thumbnail_image = Image.open(THUMBNAIL_YT_NAME).convert("RGBA")
+thumbnail_image = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}").convert("RGBA")
 thumbnail_image = thumbnail_image.resize((16 * 15, 9 * 15))
 
 # Coordinates of the thumbnail (centered vertically)
@@ -176,8 +176,8 @@ image.alpha_composite(thumbnail_image, (thumbnail_x, thumbnail_y))
 # REMOVE THUMBNAIL
 utils_convertor.checklist(7)
 
-if os.path.exists(THUMBNAIL_YT_NAME):
-    os.remove(THUMBNAIL_YT_NAME)
+if os.path.exists(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}"):
+    os.remove(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 else:
     print(f"Le fichier {THUMBNAIL_YT_NAME} n'existe pas.")
 
@@ -185,6 +185,6 @@ else:
 # SAVE FINAL IMAGE
 utils_convertor.checklist(8)
 
-image.save(utils_convertor.format_filename(video_title) + ".png", format="PNG")
+image.save(f"{CURRENT_PATH}/{utils_convertor.format_filename(video_title)}.png", format="PNG")
 
 utils_convertor.checklist(9)

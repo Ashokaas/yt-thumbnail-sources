@@ -60,7 +60,7 @@ def clear_console():
 def checklist(current_step:int):
     clear_console()
     emojis = ["✔️", "❌", "⏳"]
-    all_steps = ["Retrieving video informations...", 
+    all_steps = ["Retrieving video informations/Downloading the thumbnail...", 
              "Rounding up the thumbnail...", 
              "Creating the background...", 
              "Adding the title...", 
