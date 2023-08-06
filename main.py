@@ -40,8 +40,11 @@ video_title = response['items'][0]['snippet']['title']
 view_count = response['items'][0]['statistics']['viewCount']
 channel_title = response['items'][0]['snippet']['channelTitle']
 
-# Retrieve youtube thumbnail
-thumbnail_url = response['items'][0]['snippet']['thumbnails']['maxres']['url']
+# Retrieve youtube thumbnail and try to get the highest resolution
+resolution_order = ['maxres', 'standard', 'high', 'medium', 'default']
+for resolution in resolution_order:
+    if resolution in response['items'][0]['snippet']['thumbnails']:
+        thumbnail_url = response['items'][0]['snippet']['thumbnails'][resolution]['url']
 response = requests.get(thumbnail_url)
 
 # Save image locally
@@ -55,24 +58,27 @@ print("Miniature téléchargée avec succès.")
 # ROUND UP THE THUMBNAIL
 utils_convertor.checklist(1)
 
-im = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
+# I've rounded in pixels, not percentages, so it only works at maximum resolution, otherwise it might create a texture bug.
+if resolution != 'maxres':
+    
+    im = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 
-# Create a circular mask for rounding
-circle_mask = Image.new('L', (BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL * 2), 0)
-draw = ImageDraw.Draw(circle_mask)
-draw.ellipse((0, 0, BORDER_RADIUS_THUMBNAIL * 2 - 1, BORDER_RADIUS_THUMBNAIL * 2 - 1), fill=255)
+    # Create a circular mask for rounding
+    circle_mask = Image.new('L', (BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL * 2), 0)
+    draw = ImageDraw.Draw(circle_mask)
+    draw.ellipse((0, 0, BORDER_RADIUS_THUMBNAIL * 2 - 1, BORDER_RADIUS_THUMBNAIL * 2 - 1), fill=255)
 
-# Create an alpha mask with the rounded circle
-alpha = Image.new('L', im.size, 255)
-w, h = im.size
-alpha.paste(circle_mask.crop((0, 0, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL)), (0, 0))
-alpha.paste(circle_mask.crop((0, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL * 2)), (0, h - BORDER_RADIUS_THUMBNAIL))
-alpha.paste(circle_mask.crop((BORDER_RADIUS_THUMBNAIL, 0, BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL)), (w - BORDER_RADIUS_THUMBNAIL, 0))
-alpha.paste(circle_mask.crop((BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL * 2)), (w - BORDER_RADIUS_THUMBNAIL, h - BORDER_RADIUS_THUMBNAIL))
+    # Create an alpha mask with the rounded circle
+    alpha = Image.new('L', im.size, 255)
+    w, h = im.size
+    alpha.paste(circle_mask.crop((0, 0, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL)), (0, 0))
+    alpha.paste(circle_mask.crop((0, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL * 2)), (0, h - BORDER_RADIUS_THUMBNAIL))
+    alpha.paste(circle_mask.crop((BORDER_RADIUS_THUMBNAIL, 0, BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL)), (w - BORDER_RADIUS_THUMBNAIL, 0))
+    alpha.paste(circle_mask.crop((BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL * 2)), (w - BORDER_RADIUS_THUMBNAIL, h - BORDER_RADIUS_THUMBNAIL))
 
-# Save image locally
-im.putalpha(alpha)
-im.save(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
+    # Save image locally
+    im.putalpha(alpha)
+    im.save(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 
     
 
