@@ -178,7 +178,6 @@ utils_convertor.checklist(7)
 
 if os.path.exists(THUMBNAIL_YT_NAME):
     os.remove(THUMBNAIL_YT_NAME)
-    print(f"Le fichier {THUMBNAIL_YT_NAME} a été supprimé.")
 else:
     print(f"Le fichier {THUMBNAIL_YT_NAME} n'existe pas.")
 
