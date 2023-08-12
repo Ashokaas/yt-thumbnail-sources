@@ -182,10 +182,10 @@ image.alpha_composite(thumbnail_image, (thumbnail_x, thumbnail_y))
 # REMOVE THUMBNAIL
 utils_convertor.checklist(7)
 
-"""if os.path.exists(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}"):
+if os.path.exists(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}"):
     os.remove(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 else:
-    print(f"Le fichier {THUMBNAIL_YT_NAME} n'existe pas.")"""
+    print(f"Le fichier {THUMBNAIL_YT_NAME} n'existe pas.")
 
 
 # SAVE FINAL IMAGE
