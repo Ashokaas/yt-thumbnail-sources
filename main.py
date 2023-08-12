@@ -11,7 +11,7 @@ import utils_convertor
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # CONSTANTS
-BORDER_RADIUS_THUMBNAIL = 100
+BORDER_RADIUS_THUMBNAIL = 10
 BORDER_RADIUS_RECTANGLE = 20
 BACKGROUND_OPACITY = 150
 THUMBNAIL_YT_NAME = "youtube_thumbnail.png"
@@ -124,7 +124,7 @@ text_x = rect_x + 280
 text_y = rect_y + 20
 
 # Split text into several lines
-wrapped_text = textwrap.wrap(video_title, width=35)
+wrapped_text = textwrap.wrap(video_title, width=33)
 
 # Draw each line on the rectangle with a maximum of 2 lines
 max_lines = 2
@@ -182,10 +182,10 @@ image.alpha_composite(thumbnail_image, (thumbnail_x, thumbnail_y))
 # REMOVE THUMBNAIL
 utils_convertor.checklist(7)
 
-if os.path.exists(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}"):
+"""if os.path.exists(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}"):
     os.remove(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 else:
-    print(f"Le fichier {THUMBNAIL_YT_NAME} n'existe pas.")
+    print(f"Le fichier {THUMBNAIL_YT_NAME} n'existe pas.")"""
 
 
 # SAVE FINAL IMAGE
