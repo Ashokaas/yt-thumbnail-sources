@@ -66,6 +66,7 @@ response_thumbnail = requests.get(thumbnail_url)
 with open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}", "wb") as img_file:
     img_file.write(response_thumbnail.content)
 
+
 print("Miniature téléchargée avec succès.")
 
 
@@ -75,6 +76,25 @@ utils_convertor.checklist(1)
 
 # I've rounded in pixels, not percentages, so it only works at maximum resolution, otherwise it might create a texture bug.
 im = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
+
+# Removing black lines from top to bottom
+for y in range(im.height):
+    pixel_color = im.getpixel((0, y))
+    
+    if all(color == 0 for color in pixel_color[:3]):
+        im = im.crop((0, y, im.width, im.height))
+    else:
+        break
+
+# Removing black lines from bottom to top
+for y in reversed(range(im.height)):
+    pixel_color = im.getpixel((0, y))
+    
+    if all(color == 0 for color in pixel_color[:3]):
+        im = im.crop((0, 0, im.width, y))
+    else:
+        break
+
 
 border_radius_thumbnail = im.size[0] // BORDER_RADIUS_THUMBNAIL_ANGLE
 
@@ -185,7 +205,9 @@ utils_convertor.checklist(6)
 
 # Open and resize thumbnail
 thumbnail_image = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}").convert("RGBA")
-thumbnail_image = thumbnail_image.resize((16 * 15, 9 * 15))
+new_width  = 16 * 15
+new_height = int(round(new_width * thumbnail_image.size[1] / thumbnail_image.size[0], 0))
+thumbnail_image = thumbnail_image.resize((new_width, new_height))
 
 # Coordinates of the thumbnail (centered vertically)
 thumbnail_x = rect_x + 15
