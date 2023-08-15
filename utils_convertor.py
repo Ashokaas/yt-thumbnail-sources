@@ -113,3 +113,4 @@ def checklist(current_step:int):
             print(f"{emojis[2]}  {all_steps[step]}")
         else:
             print(f"{emojis[1]}  {all_steps[step]}")
+
