@@ -8,16 +8,29 @@ import os
 
 import utils_convertor
 
-CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+
 
 # CONSTANTS
-BORDER_RADIUS_THUMBNAIL = 10
+
+CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+
+# the border radius of the thumbnail is calculated with the width of the image divided by this number, increase it to make the thumbnail more rounded
+BORDER_RADIUS_THUMBNAIL_ANGLE = 12
+
+# the border radius of the rectangle is in pixels
 BORDER_RADIUS_RECTANGLE = 20
+
+# opacity of the background rectangle (0 = transparent, 255 = opaque)
 BACKGROUND_OPACITY = 150
+
+# the name of the thumbnail image is useless because it will be deleted at the end
 THUMBNAIL_YT_NAME = "youtube_thumbnail.png"
 
+# u can change the font if u want but don't remove it
 PRIMARY_FONT = CURRENT_PATH + "/Roboto-Black.ttf"
 ADDITIONAL_FONT = CURRENT_PATH + "/Roboto-Light.ttf"
+
+
 
 video_id = utils_convertor.get_youtube_video_id(input("URL de la vidéo YouTube: "))
 
@@ -45,11 +58,13 @@ resolution_order = ['maxres', 'standard', 'high', 'medium', 'default']
 for resolution in resolution_order:
     if resolution in response['items'][0]['snippet']['thumbnails']:
         thumbnail_url = response['items'][0]['snippet']['thumbnails'][resolution]['url']
-response = requests.get(thumbnail_url)
+        break
+        
+response_thumbnail = requests.get(thumbnail_url)
 
 # Save image locally
 with open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}", "wb") as img_file:
-    img_file.write(response.content)
+    img_file.write(response_thumbnail.content)
 
 print("Miniature téléchargée avec succès.")
 
@@ -59,26 +74,27 @@ print("Miniature téléchargée avec succès.")
 utils_convertor.checklist(1)
 
 # I've rounded in pixels, not percentages, so it only works at maximum resolution, otherwise it might create a texture bug.
-if resolution != 'maxres':
-    
-    im = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
+im = Image.open(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 
-    # Create a circular mask for rounding
-    circle_mask = Image.new('L', (BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL * 2), 0)
-    draw = ImageDraw.Draw(circle_mask)
-    draw.ellipse((0, 0, BORDER_RADIUS_THUMBNAIL * 2 - 1, BORDER_RADIUS_THUMBNAIL * 2 - 1), fill=255)
+border_radius_thumbnail = im.size[0] // BORDER_RADIUS_THUMBNAIL_ANGLE
 
-    # Create an alpha mask with the rounded circle
-    alpha = Image.new('L', im.size, 255)
-    w, h = im.size
-    alpha.paste(circle_mask.crop((0, 0, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL)), (0, 0))
-    alpha.paste(circle_mask.crop((0, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL * 2)), (0, h - BORDER_RADIUS_THUMBNAIL))
-    alpha.paste(circle_mask.crop((BORDER_RADIUS_THUMBNAIL, 0, BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL)), (w - BORDER_RADIUS_THUMBNAIL, 0))
-    alpha.paste(circle_mask.crop((BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL, BORDER_RADIUS_THUMBNAIL * 2, BORDER_RADIUS_THUMBNAIL * 2)), (w - BORDER_RADIUS_THUMBNAIL, h - BORDER_RADIUS_THUMBNAIL))
 
-    # Save image locally
-    im.putalpha(alpha)
-    im.save(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
+# Create a circular mask for rounding
+circle_mask = Image.new('L', (border_radius_thumbnail * 2, border_radius_thumbnail * 2), 0)
+draw = ImageDraw.Draw(circle_mask)
+draw.ellipse((0, 0, border_radius_thumbnail * 2 - 1, border_radius_thumbnail * 2 - 1), fill=255)
+
+# Create an alpha mask with the rounded circle
+alpha = Image.new('L', im.size, 255)
+w, h = im.size
+alpha.paste(circle_mask.crop((0, 0, border_radius_thumbnail, border_radius_thumbnail)), (0, 0))
+alpha.paste(circle_mask.crop((0, border_radius_thumbnail, border_radius_thumbnail, border_radius_thumbnail * 2)), (0, h - border_radius_thumbnail))
+alpha.paste(circle_mask.crop((border_radius_thumbnail, 0, border_radius_thumbnail * 2, border_radius_thumbnail)), (w - border_radius_thumbnail, 0))
+alpha.paste(circle_mask.crop((border_radius_thumbnail, border_radius_thumbnail, border_radius_thumbnail * 2, border_radius_thumbnail * 2)), (w - border_radius_thumbnail, h - border_radius_thumbnail))
+
+# Save image locally
+im.putalpha(alpha)
+im.save(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 
     
 
@@ -179,13 +195,13 @@ image.alpha_composite(thumbnail_image, (thumbnail_x, thumbnail_y))
 
 
 
-# REMOVE THUMBNAIL
+# DELETE THUMBNAIL
 utils_convertor.checklist(7)
 
 if os.path.exists(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}"):
     os.remove(f"{CURRENT_PATH}/{THUMBNAIL_YT_NAME}")
 else:
-    print(f"Le fichier {THUMBNAIL_YT_NAME} n'existe pas.")
+    print(f"The file {THUMBNAIL_YT_NAME} doesn't exist")
 
 
 # SAVE FINAL IMAGE
