@@ -40,7 +40,3 @@ PRIMARY_FONT = CURRENT_PATH + "/Roboto-Black.ttf"
 ADDITIONAL_FONT = CURRENT_PATH + "/Roboto-Light.ttf"
 ```
 
-<br><br><br>
-
-<i>sorry for my bed england</i>
-
